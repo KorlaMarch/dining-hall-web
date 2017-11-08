@@ -312,14 +312,3 @@ ul{
 .cbo_nn_SecondaryNutrientLabel
 {
 }
-.column {
-    float: left;
-    width: 25%;
-}
-
-/* Clear floats after the columns */
-.row:after {
-    content: "Alumni Hall Hours";
-    display: table;
-    clear: both;
-}

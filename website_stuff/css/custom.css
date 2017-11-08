@@ -313,8 +313,8 @@ ul{
 {
 }
 .column {
-    float: right;
-    width: 50%;
+    float: left;
+    width: 25%;
 }
 
 /* Clear floats after the columns */

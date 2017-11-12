@@ -33,6 +33,7 @@ nav{
 }
 
 #feedback-form{
+  padding:10rem 0 10rem 0;
   display: block;
   margin: auto;
 }
@@ -62,6 +63,7 @@ ul{
 #menulist-header{
   width: 100%;
   background-image: url('../images/salad.png');
+  height: 400px;
   background-attachment: fixed;
   padding : 8rem 0 8rem 0;
 }

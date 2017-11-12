@@ -54,10 +54,9 @@ ul{
 
 #index-header{
   width: 100%;
-  background-image: url('../images/Front-of-Alumni');
-
+  background-image: url('../images/Front-of-Alumni.jpg');
   background-attachment: fixed;
-  padding : 4rem 0 2rem 0;
+  padding : 2rem 0 4rem 0;
 
 }
 

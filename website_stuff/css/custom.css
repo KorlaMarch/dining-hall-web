@@ -19,7 +19,7 @@ body {
 }
 
 nav{
-  background-color: #519dd0;
+  background-color: #62A8E5;
 }
 
 .below-nav {
@@ -46,17 +46,24 @@ ul{
   text-align: center;
 }
 
-.feedback-head{
+.feedback-pgback{
   width: 100%;
   background-image: url('../images/NMH_Dining_Hall.jpg');
   background-attachment: fixed;
+}
+
+#feedback-header{
+  width: 100%;
+  background-image: url('../images/DiningHallFallPic.jpg');
+  background-attachment: fixed;
+  padding : 16rem 0 8rem 0;
 }
 
 #menulist-header{
   width: 100%;
   background-image: url('../images/salad.png');
   background-attachment: fixed;
-  padding : 8rem 0 8rem 0;
+  padding : 2rem 0 4rem 0;
 }
 
 .item{

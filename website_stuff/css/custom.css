@@ -31,6 +31,10 @@ nav{
 #about-text{
   margin: 0 auto;
 }
+.rules{
+  font-family: "Arial";
+	font-size: 12px;
+}
 
 #feedback-form{
   padding:10rem 0 10rem 0;

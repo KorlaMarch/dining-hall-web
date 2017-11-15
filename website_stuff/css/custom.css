@@ -58,9 +58,9 @@ ul{
 }
 
 
-#feedback-header{
+#index-header{
   width: 100%;
-  background-image: url('../images/DiningHallFallPic.jpg');
+  background-image: url('../images/DHFallPic.jpg');
   background-attachment: fixed;
   padding : 16rem 0 8rem 0;
 }

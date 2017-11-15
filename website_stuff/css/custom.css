@@ -37,9 +37,10 @@ nav{
 }
 
 #feedback-form{
-  padding:10rem 0 10rem 0;
+  padding:5rem 0 5rem 0;
   display: block;
   margin: auto;
+  height: 1000px;
 }
 
 ul{

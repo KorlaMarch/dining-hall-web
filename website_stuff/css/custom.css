@@ -52,6 +52,10 @@ ul{
   text-align: center;
 }
 
+.container-fluid{
+  
+}
+
 .feedback-pgback{
   width: 100%;
   background-image: url('../images/NMH_Dining_Hall.jpg');

@@ -1,7 +1,7 @@
 /* CSS declarations go here */
 html {
-  position: relative;
   min-height: 100%;
+  position: relative;
 }
 body {
   /* Margin bottom by footer height */
@@ -50,10 +50,6 @@ ul{
 
 .container{
   text-align: center;
-}
-
-.container-fluid{
-  
 }
 
 .feedback-pgback{

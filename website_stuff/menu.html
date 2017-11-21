@@ -21,16 +21,20 @@
 
     <script>
       var menu = TAFFY();
+      var listDate = {};
       //retrieve the json object from the middle-man server
-      $.getJSON( "http://45.32.165.208/", function( data ) {
+      $.getJSON( "http://45.32.165.208/", function( res ) {
         //inserts a trimmed version of the JSON received from the server
-        const header = data[0];
+        const header = res.head;
 
-        var newdata = data.slice(1).map( (element) => {
+        var newdata = res.data.map( (element) => {
+          const itemData = element.value;
           let meal = {};
-          for(let i = 0; i < element.length; i++){
-            meal[header[i]] = element[i];
+          for(let i = 0; i < itemData.length; i++){
+            meal[header[i]] = itemData[i];
           }
+
+          listDate[getDayOfWeek(parseInt(element.date))] = new Date(parseInt(element.date));
           return meal;
         });
 
@@ -108,16 +112,17 @@
           </div>
         </div>
       </div>
-      <!-- need to make current day button darker-->
       <div class="mt-5">
-        <div class="meal mx-auto row">
+        <h2 class="row justify-content-center currentdate">
+        </h2>
+        <div class="mt-4 meal mx-auto row">
         </div>
       </div>
     </div>
 
     <footer class="footer">
       <div class="container">
-        <span class="text-muted">NMH Dining Service <i class="fa fa-copyright" aria-hidden="true"></i> 2017 
+        <span class="text-muted">NMH Dining Service <i class="fa fa-copyright" aria-hidden="true"></i> 2017
         </span>
       </div>
     </footer>
@@ -152,6 +157,10 @@ function fillMenu(day) {
   //const realMeal = ['Breakfast','Lunch','Dinner','Brunch'];
   var meals = menu({dayOfWeek : day}).distinct("Meal");
 
+  $('.currentdate').empty();
+
+  $('.currentdate').text("Menu for " + day + " " + listDate[day].getUTCMonth() + "/" + listDate[day].getUTCDate() + "/" + listDate[day].getUTCFullYear());
+
   $('.meal').empty();
 
   $.each(meals, function(e, meal) {
@@ -162,7 +171,7 @@ function fillMenu(day) {
     );
     $.each(menu({Meal: {isnocase: meal},dayOfWeek: day}).order('ServiceCourse').get(), function(i, item) {
       if(item.ServiceCourse!='13 - PARSTOCKS'){
-        $('.'+meal).append('<li class="item"> <a href=\"item-overview.html?id=' + item.KeyName + '\">' + item.FormalName.toLowerCase() + '</a></li>');
+        $('.'+meal).append('<li class="item"> <a href=\"item.html?id=' + item.KeyName + '\">' + item.FormalName.toLowerCase() + '</a></li>');
       }
     });
     //}

@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<!-- Ideally this will be a template for displaying all necessary information about a certain item. -->
+<html lang="en">
+  <head>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/custom.css" />
+    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+    <script src="js/taffy.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>NMH Dining</title>
+
+    <script>
+      function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+      }
+
+      //retrieve the json object from the middle-man server 45.32.165.208
+      $.getJSON( "http://45.32.165.208/", function( res ) {
+        //inserts a trimmed version of the JSON received from the server
+        const header = res.head;
+        const data = res.data;
+
+        //find keyname col
+        let idcol = -1;
+        for(let i = 0; i < header.length; i++){
+          if(header[i]=="KeyName"){
+            idcol = i;
+            break;
+          }
+        }
+
+        if(idcol==-1){
+          console.log("Invalid data");
+        }else{
+          const id = getParameterByName("id");
+          for(let i = 1; i < data.length; i++){
+            if(data[i].value[idcol]==id){
+              let meal = {};
+              const element = data[i].value;
+              for(let j = 0; j < element.length; j++){
+                meal[header[j]] = element[j];
+              }
+              console.log("get Meal" + meal);
+              fillMeal(meal);
+              break;
+            }
+          }
+        }
+      });
+    </script>
+
+  </head>
+
+  <body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">NMH Dining Services</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home
+              </a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="menu.html">Menu
+                <!-- <span class="sr-only">(current)</span> -->
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="Feedback.html">Feedback</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Content -->
+   <h1 class="below-nav display-3"><span class="menu-FormalName"></span></h1>
+
+   <div class="container pb-5">
+  <div class="row justify-content-center">
+    <!-- Nutrition Information -->
+    <div id="nutritionLabel" class="cbo_nn_NutritionLabelDiv">
+      <table class="cbo_nn_NutritionLabelTable" cellpadding="0" cellspacing="0" style="width:100%;">
+      <tbody>
+        <tr>
+          <td>
+            <table width="100%">
+              <tbody>
+                <tr>
+                  <td class="cbo_nn_LabelHeader menu-FormalName"></td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="cbo_nn_LargeLabelHeader">Nutrition Information</td>
+        </tr>
+        <tr>
+          <td class="cbo_nn_LabelBottomBorderLabel">Serving Size:&nbsp;<span class="menu-ServingUofmDesc"></span>&nbsp;(<span class="menu-ServingGramWgt"></span>g)</td>
+        </tr>
+        <tr>
+          <td class="cbo_nn_LabelAmountServed">Amount Per Serving</td>
+        </tr>
+        <tr>
+          <td class="cbo_nn_LabelBorderedSubHeader" style="white-space:nowrap;">
+            <table style="width:100%;" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td class="cbo_nn_LabelDetail">
+                    <font style="font-weight: bold;">Calories:</font>&nbsp;&nbsp;<span class="cbo_nn_LabelDetailIncomplete menu-KCAL_Value"></span></td>
+                  <td class="cbo_nn_SecondaryNutrient">Calories from Fat:&nbsp;&nbsp;<span class="cbo_nn_LabelDetailIncomplete menu-CaloriesFromFat_Value"></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td align="right" class="cbo_nn_LabelDailyValue">% Daily Value</td>
+        </tr>
+        <tr>
+          <td>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td colspan="2" class="cbo_nn_LabelBorderedSubHeader">
+                    <table cellpadding="0" cellspacing="0" style="width:100%;">
+                      <tbody>
+                        <tr>
+                          <td style="width:70%; padding-left: 20px">
+                            <table cellpadding="0" cellspacing="0" style="width:100%;">
+                              <tbody>
+                                <tr>
+                                  <td class="cbo_nn_LabelDetail" style="width:*">
+                                    <font style="font-weight:bold;">Total Fat:</font>
+                                  </td>
+                                  <td>
+                                    <font class="cbo_nn_LabelPrimaryDetailIncomplete">&nbsp;<span class="menu-TotalFat_Gram"></span>&nbsp;Gram</font>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                          <td style="width:30%;" align="right" class="cbo_nn_LabelLeftPaddedDetailIncomplete"><span class="menu-TotalFat_Percent"></span>%</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td width="10px">&nbsp;</td>
+                  <td class="cbo_nn_LabelBorderedSubHeader">
+                    <table cellpadding="0" cellspacing="0" style="width:100%;">
+                      <tbody>
+                        <tr>
+                          <td style="width:70%; padding-left: 20px">
+                            <table cellpadding="0" cellspacing="0" style="width:100%;">
+                              <tbody>
+                                <tr>
+                                  <td class="cbo_nn_LabelDetail" style="width:*">
+                                    <font style="font-weight:normal;">Saturated Fat:</font>
+                                  </td>
+                                  <td>
+                                    <font class="cbo_nn_LabelPrimaryDetailIncomplete">&nbsp;<span class="menu-FattyAcidTotalSat_Gram"></span>&nbsp;Gram</font>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                          <td style="width:30%;" align="right" class="cbo_nn_LabelLeftPaddedDetailIncomplete"><span class="menu-FattyAcidTotalSat_Percent"></span>%</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td width="10px">&nbsp;</td>
+                  <td class="cbo_nn_LabelBorderedSubHeader">
+                    <table cellpadding="0" cellspacing="0" style="width:100%;">
+                      <tbody>
+                        <tr>
+                          <td style="width:70%; padding-left: 20px">
+                            <table cellpadding="0" cellspacing="0" style="width:100%;">
+                              <tbody>
+                                <tr>
+                                  <td class="cbo_nn_LabelDetail" style="width:*">
+                                    <font style="font-weight:normal;">Trans Fat:</font>
+                                  </td>
+                                  <td>
+                                    <font class="cbo_nn_LabelPrimaryDetailIncomplete">&nbsp;<span class="menu-FattyAcidTotalPoly_Gram"></span>&nbsp;Gram</font>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                          <td style="width:30%;" align="right" class="cbo_nn_LabelLeftPaddedDetailIncomplete"><span class="menu-FattyAcidTotalPoly_Percent"></span>%</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td colspan="2" class="cbo_nn_LabelBorderedSubHeader">
+                    <table cellpadding="0" cellspacing="0" style="width:100%;">
+                      <tbody>
+                        <tr>
+                          <td style="width:70%; padding-left: 20px">
+                            <table cellpadding="0" cellspacing="0" style="width:100%;">
+                              <tbody>
+                                <tr>
+                                  <td class="cbo_nn_LabelDetail" style="width:*">
+                                    <font style="font-weight:bold;">Cholesterol:</font>
+                                  </td>
+                                  <td>
+                                    <font class="cbo_nn_LabelPrimaryDetailIncomplete">&nbsp;<span class="menu-Cholesterol_Milligram"></span>&nbsp;MG</font>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                          <td style="width:30%;" align="right" class="cbo_nn_LabelLeftPaddedDetailIncomplete"><span class="menu-Cholesterol_Percent"></span>%</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td colspan="2" class="cbo_nn_LabelBorderedSubHeader">
+                    <table cellpadding="0" cellspacing="0" style="width:100%;">
+                      <tbody>
+                        <tr>
+                          <td style="width:70%; padding-left: 20px">
+                            <table cellpadding="0" cellspacing="0" style="width:100%;">
+                              <tbody>
+                                <tr>
+                                  <td class="cbo_nn_LabelDetail" style="width:*">
+                                    <font style="font-weight:bold;">Sodium:</font>
+                                  </td>
+                                  <td>
+                                    <font class="cbo_nn_LabelPrimaryDetailIncomplete">&nbsp;<span class="menu-Sodium_Milligram"></span>&nbsp;MG</font>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                          <td style="width:30%;" align="right" class="cbo_nn_LabelLeftPaddedDetailIncomplete"><span class="menu-Sodium_Percent"></span>%</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td colspan="2" class="cbo_nn_LabelBorderedSubHeader">
+                    <table cellpadding="0" cellspacing="0" style="width:100%;">
+                      <tbody>
+                        <tr>
+                          <td style="width:70%; padding-left: 20px">
+                            <table cellpadding="0" cellspacing="0" style="width:100%;">
+                              <tbody>
+                                <tr>
+                                  <td class="cbo_nn_LabelDetail" style="width:*">
+                                    <font style="font-weight:bold;">Potassium:</font>
+                                  </td>
+                                  <td>
+                                    <font class="cbo_nn_LabelPrimaryDetailIncomplete">&nbsp;<span class="menu-Potassium_Milligram"></span>&nbsp;MG</font>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                          <td style="width:30%;" align="right" class="cbo_nn_LabelLeftPaddedDetailIncomplete"><span class="menu-Potassium_Percent"></span>%</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td colspan="2" class="cbo_nn_LabelBorderedSubHeader">
+                    <table cellpadding="0" cellspacing="0" style="width:100%;">
+                      <tbody>
+                        <tr>
+                          <td style="width:70%; padding-left: 20px">
+                            <table cellpadding="0" cellspacing="0" style="width:100%;">
+                              <tbody>
+                                <tr>
+                                  <td class="cbo_nn_LabelDetail" style="width:*">
+                                    <font style="font-weight:bold;">Total Carbohydrate:</font>
+                                  </td>
+                                  <td>
+                                    <font class="cbo_nn_LabelPrimaryDetailIncomplete">&nbsp;<span class="menu-TotalCarb_Gram"></span>&nbsp;Gram</font>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                          <td style="width:30%;" align="right" class="cbo_nn_LabelLeftPaddedDetailIncomplete"><span class="menu-TotalCarb_Percent"></span>%</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td width="10px">&nbsp;</td>
+                  <td class="cbo_nn_LabelBorderedSubHeader">
+                    <table cellpadding="0" cellspacing="0" style="width:100%;">
+                      <tbody>
+                        <tr>
+                          <td style="width:70%; padding-left: 20px">
+                            <table cellpadding="0" cellspacing="0" style="width:100%;">
+                              <tbody>
+                                <tr>
+                                  <td class="cbo_nn_LabelDetail" style="width:*">
+                                    <font style="font-weight:normal;">Dietary Fiber:</font>
+                                  </td>
+                                  <td>
+                                    <font class="cbo_nn_LabelPrimaryDetailIncomplete">&nbsp;<span class="menu-FiberTotalDietary_Gram"></span>&nbsp;Gram</font>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                          <td style="width:30%;" align="right" class="cbo_nn_LabelLeftPaddedDetailIncomplete"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td width="10px">&nbsp;</td>
+                  <td class="cbo_nn_LabelBorderedSubHeader">
+                    <table cellpadding="0" cellspacing="0" style="width:100%;">
+                      <tbody>
+                        <tr>
+                          <td style="width:70%; padding-left: 20px">
+                            <table cellpadding="0" cellspacing="0" style="width:100%;">
+                              <tbody>
+                                <tr>
+                                  <td class="cbo_nn_LabelDetail" style="width:*">
+                                    <font style="font-weight:normal;">Sugars:</font>
+                                  </td>
+                                  <td>
+                                    <font class="cbo_nn_LabelPrimaryDetailIncomplete">&nbsp;<span class="menu-SugarTotal_Gram"></span>&nbsp;Gram</font>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                          <td style="width:30%;" align="right" class="cbo_nn_LabelLeftPaddedDetailIncomplete"><span class="menu-SugarTotal_Percent"></span>%</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td colspan="2" class="cbo_nn_LabelBorderedSubHeader">
+                    <table cellpadding="0" cellspacing="0" style="width:100%;">
+                      <tbody>
+                        <tr>
+                          <td style="width:70%; padding-left: 20px">
+                            <table cellpadding="0" cellspacing="0" style="width:100%;">
+                              <tbody>
+                                <tr>
+                                  <td class="cbo_nn_LabelDetail" style="width:*">
+                                    <font style="font-weight:bold;">Protein:</font>
+                                  </td>
+                                  <td>
+                                    <font class="cbo_nn_LabelPrimaryDetailIncomplete">&nbsp;&lt; <span class="menu-Protein_Gram"></span>&nbsp;Gram</font>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                          <td style="width:30%;" align="right" class="cbo_nn_LabelLeftPaddedDetailIncomplete"><span class="menu-Protein_Percent"></span>%</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table style="width:100%;" cellpadding="0" cellspacing="0" class="cbo_nn_LabelSecondaryTable">
+              <tbody>
+                <tr>
+                  <td class="cbo_nn_SecondaryNutrientLabel">Vitamin A:<span class="cbo_nn_SecondaryNutrientIncomplete">&nbsp;<span class="menu-VitaminAiu_Percent"></span>%</span></td>
+                  <td class="cbo_nn_SecondaryNutrientSpacer"><img src="images/bullet_gray.gif" alt=""></td>
+                  <td class="cbo_nn_SecondaryNutrientLabel">Vitamin C:<span class="cbo_nn_SecondaryNutrientIncomplete">&nbsp;<span class="menu-VitaminC_Percent"></span>%</span></td>
+                </tr>
+                <tr>
+                  <td class="cbo_nn_SecondaryNutrientLabel">Calcium:<span class="cbo_nn_SecondaryNutrientIncomplete">&nbsp;<span class="menu-Calcium_Percent"></span>%</span></td>
+                  <td class="cbo_nn_SecondaryNutrientSpacer"><img src="images/bullet_gray.gif" alt=""></td>
+                  <td class="cbo_nn_SecondaryNutrientLabel">Iron:<span class="cbo_nn_SecondaryNutrientIncomplete">&nbsp;<span class="menu-Iron_Percent"></span>%</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td><span class="cbo_nn_LabelIngredientsBold">Ingredients:</span><span class="cbo_nn_LabelIngredients"><span class="menu-IngredList"></span></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table cellpadding="0" cellspacing="0">
+              <tbody>
+                <tr>
+                  <td><span class="cbo_nn_LabelAllergensBold">Contains:</span><span class="cbo_nn_LabelAllergens"><span class="menu-AllergenList"></span></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+    <footer class="footer">
+      <div class="container">
+        <span class="text-muted">NMH Dining Service <i class="fa fa-copyright" aria-hidden="true"></i>
+          <a href="Godofuniverse.html" style="color:gray">2017</a>
+        </span>
+      </div>
+    </footer>
+<script>
+
+function toSentenceCase(str) {
+  return str.substr(0,1).toUpperCase()+str.substr(1).toLowerCase();
+}
+
+function fillMeal(meal) {
+  console.log(meal);
+  for(x in meal){
+    let elements = document.getElementsByClassName("menu-" + x);
+    //console.log(elements);
+    for(var i = 0; i < elements.length; i++){
+      elements[i].innerHTML = meal[x];
+    }
+  }
+}
+</script>
+  </body>
+
+</html>

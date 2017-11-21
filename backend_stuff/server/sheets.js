@@ -66,7 +66,7 @@ module.exports = function sheets(){
 
           sheets.filterData = function(callback){
             var current = new Date();
-            var msstart = Date.UTC(current.getFullYear(), current.getMonth(), 12)-86400000;
+            var msstart = Date.UTC(current.getFullYear(), current.getMonth(), current.getDate())-86400000;
 
             return menus.find({ date: { $gte: msstart, $lt : msstart+1000*60*60*24*7 } }).toArray( (err, result) => {
               if (err) throw err;

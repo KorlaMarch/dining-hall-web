@@ -17,6 +17,7 @@ app.use(multer({ storage }).single('newdata'));
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
+app.use(bodyParser.json())
 
 // To allow Cross-Domain Cookie
 app.use(function(req, res, next) {

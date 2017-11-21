@@ -66,7 +66,7 @@ module.exports = function sheets(){
 
           sheets.filterData = function(callback){
             var current = new Date();
-            var msstart = Date.UTC(current.getFullYear(), current.getMonth(), current.getDate())-86400000;
+            var msstart = Date.UTC(current.getFullYear(), current.getMonth(), 12)-86400000;
 
             return menus.find({ date: { $gte: msstart, $lt : msstart+1000*60*60*24*7 } }).toArray( (err, result) => {
               if (err) throw err;
@@ -75,7 +75,7 @@ module.exports = function sheets(){
           }
 
           sheets.getRating = function(key, callback){
-            return rating.find({ name: key }).toArray( (err, result) => {
+            return rating.findOne({ name: key }, (err, result) => {
               if (err) throw err;
               callback(result);
             });
@@ -83,8 +83,8 @@ module.exports = function sheets(){
 
           sheets.addRating = function(key, value){
             sheets.getRating(key, (result) => {
-              result[0].rateCount[value]++;
-              rating.update({ name: key }, result[0]);
+              result.rateCount[value-1]++;
+              rating.update({ name: key }, result);
             });
           }
         });

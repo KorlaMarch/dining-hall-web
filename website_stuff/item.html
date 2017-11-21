@@ -20,46 +20,123 @@
     <title>NMH Dining</title>
 
     <script>
-      function getParameterByName(name, url) {
-        if (!url) url = window.location.href;
-        name = name.replace(/[\[\]]/g, "\\$&");
-        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-            results = regex.exec(url);
-        if (!results) return null;
-        if (!results[2]) return '';
-        return decodeURIComponent(results[2].replace(/\+/g, " "));
-      }
+      const server = 'http://localhost:8080/';
+      var isRated = false;
 
-      //retrieve the json object from the middle-man server 45.32.165.208
-      $.getJSON( "http://45.32.165.208/", function( res ) {
-        //inserts a trimmed version of the JSON received from the server
-        const header = res.head;
-        const data = res.data;
+      $( function(){
+        var rating = 2.5;
+        const id = getParameterByName("id");
 
-        //find keyname col
-        let idcol = -1;
-        for(let i = 0; i < header.length; i++){
-          if(header[i]=="KeyName"){
-            idcol = i;
-            break;
+        function getParameterByName(name, url) {
+          if (!url) url = window.location.href;
+          name = name.replace(/[\[\]]/g, "\\$&");
+          var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+              results = regex.exec(url);
+          if (!results) return null;
+          if (!results[2]) return '';
+          return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        //retrieve the json object from the middle-man server 45.32.165.208
+        $.getJSON( server, function( res ) {
+          //inserts a trimmed version of the JSON received from the server
+          const header = res.head;
+          const data = res.data;
+
+          //find keyname col
+          let idcol = -1;
+          for(let i = 0; i < header.length; i++){
+            if(header[i]=="KeyName"){
+              idcol = i;
+              break;
+            }
+          }
+
+          if(idcol==-1){
+            console.log("Invalid data");
+          }else{
+            for(let i = 1; i < data.length; i++){
+              if(data[i].value[idcol]==id){
+                let meal = {};
+                const element = data[i].value;
+                for(let j = 0; j < element.length; j++){
+                  meal[header[j]] = element[j];
+                }
+                fillMeal(meal);
+                break;
+              }
+            }
+          }
+        });
+
+        //get rating from server
+        $.getJSON( server + "rating?name=" + id, function( res ) {
+          let totalRate = res.rateCount.reduce( (total, current) => (total + current));
+          let totalScore = res.rateCount.reduce( (total, current, cindex) => (total + (cindex+1)*current));
+          if(totalRate){
+            rating = totalScore/totalRate;
+          }else{
+            rating = 0;
+          }
+          renderRating(rating);
+          $('#ratecount').text(totalRate);
+          console.log(`Total Rate ${totalRate} , Score ${totalScore} , Rate ${rating}`);
+        });
+
+        //default value
+        renderRating(rating);
+
+        //rating event listener
+        for(var i = 1; i <= 5; i++){
+          $('#star'+i).mouseenter(hoverRender(i));
+          $('#star'+i).mouseleave(() => renderRating(rating));
+          $('#star'+i).click(rateAt(i));
+        }
+
+        function rateAt(x){
+            return () => {
+              if(!isRated){
+                $.post(server + "rating", {name: id, point: x})
+                  .done( () => {
+                    rating = x;
+                    renderRating(rating);
+                    isRated = true;
+                    $('#thanks').slideDown(400);
+                    $('#ratecount').text(parseInt($('#ratecount').text())+1);
+                  })
+                  .fail( () => {
+                    console.log("Error");
+                    $('#error').slideDown(400);
+                  });
+              }
+            };
+        }
+
+        function hoverRender(x){
+          return () => {
+            if(!isRated){
+              renderRating(x);
+            }
           }
         }
 
-        if(idcol==-1){
-          console.log("Invalid data");
-        }else{
-          const id = getParameterByName("id");
-          for(let i = 1; i < data.length; i++){
-            if(data[i].value[idcol]==id){
-              let meal = {};
-              const element = data[i].value;
-              for(let j = 0; j < element.length; j++){
-                meal[header[j]] = element[j];
-              }
-              console.log("get Meal" + meal);
-              fillMeal(meal);
-              break;
+        function renderRating(value){
+          var ren = Math.round(value*2);
+          //clear all class
+          for(var i = 1; i <= 5; i++){
+            $('#star'+i).removeClass('fa-star-o');
+            $('#star'+i).removeClass('fa-star-half-o');
+            $('#star'+i).removeClass('fa-star');
+          }
+          for(var i = 1; i <= 5; i++){
+            if(ren>=2){
+              $('#star'+i).addClass('fa-star');
+            }else if(ren>=1){
+              $('#star'+i).addClass('fa-star-half-o');
+            }else{
+              $('#star'+i).addClass('fa-star-o');
             }
+            ren -= 2;
           }
         }
       });
@@ -88,7 +165,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">About</a>
+              <a class="nav-link" href="about.html">About</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="Feedback.html">Feedback</a>
@@ -99,9 +176,20 @@
     </nav>
 
     <!-- Page Content -->
-   <h1 class="below-nav display-3"><span class="menu-FormalName"></span></h1>
+    <div class="below-nav container pb-5">
+   <h1 class="display-3 row justify-content-center"><span class="menu-FormalName"></span></h1>
+   <h5 class="row justify-content-center">
+     Rating:
+     <span id="star1" class="fa"></span>
+     <span id="star2" class="fa"></span>
+     <span id="star3" class="fa"></span>
+     <span id="star4" class="fa"></span>
+     <span id="star5" class="fa"></span>
+     (<span id="ratecount"></span>)
+   </h5>
+   <p id="thanks" class="row badge badge-pill badge-success" style="display: none;">Thanks for Rating!</p>
+   <p id="error" class="row badge badge-pill badge-danger" style="display: none;">Oops! Something went wrong.</p>
 
-   <div class="container pb-5">
   <div class="row justify-content-center">
     <!-- Nutrition Information -->
     <div id="nutritionLabel" class="cbo_nn_NutritionLabelDiv">

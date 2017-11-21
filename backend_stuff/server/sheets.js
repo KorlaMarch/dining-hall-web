@@ -1,91 +1,94 @@
-var https = require("https");
+var https = require('https');
 
-var config = require("./config");
-
-//original from stackoverflow.com/questions/9577611
-// function getJSON(options, callback){
-//   var req = https.request(options, function(res){
-//     var output = "";
-//     console.log(options.host + ":" + res.statusCode);
-//     res.setEncoding("utf8");
-//
-//     res.on("data", function (chunk) {
-//         output += chunk;
-//     });
-//
-//     res.on("end", function() {
-//         callback(output);
-//     });
-//   });
-//
-//   req.on("error", function(err) {
-//     console.log("error: " + JSON.stringify(err));
-//   });
-//
-//   req.end();
-// }
-//
-// function getSheet(callback){
-//   var options = {
-//     host: "sheets.googleapis.com",
-//     port: 443,
-//     path: "/v4/spreadsheets/" + config.spreadsheetsID + "?key=" + config.apiKey,
-//     method: "GET",
-//     headers: {
-//         "Content-Type": "application/json"
-//     }
-//   };
-//   getJSON(options, callback);
-// }
-//
-// function getValue(callback, range){
-//   var options = {
-//     host: "sheets.googleapis.com",
-//     port: 443,
-//     path: "/v4/spreadsheets/" + config.spreadsheetsID + "/values/A1:ET" + range + "?majorDimension=ROWS&key=" + config.apiKey,
-//     method: "GET",
-//     headers: {
-//         "Content-Type": "application/json"
-//     }
-//   };
-//   getJSON(options, callback);
-// }
+var config = require('./config');
 
 module.exports = function sheets(){
-  sheets.data = [];
-  sheets.importData = function(file){
-    console.log("get file");
-    var content = file.buffer.toString();
-    sheets.data = content.split(/(?:\r\n|\r|\n)/g).map( (element) => element.split('\t') ) ;
-    //return sheets.data;
-  }
+  var MongoClient = require('mongodb').MongoClient;
+  var url = 'mongodb://localhost:27017/db';
 
-  // if(!sheets.timerID){
-  //   sheets.timerID = setInterval(() => {
-  //     getSheet( (res) => {
-  //       if(res){
-  //         sheets.rowCount = JSON.parse(res).sheets[0].properties.gridProperties.rowCount;
-  //         getValue( (res) => {
-  //           if(res){
-  //             sheets.raw = JSON.parse(res).values;
-  //             sheets.data = sheets.raw;
-  //
-  //             //parse raw object
-  //             //const header = sheets.raw[0];
-  //
-  //             // sheets.data = sheets.raw.slice(1).map( (element) => {
-  //             //   let meal = {};
-  //             //   for(let i = 0; i < element.length; i++){
-  //             //     meal[header[i]] = element[i];
-  //             //   }
-  //             //   return meal;
-  //             // });
-  //
-  //             console.log("JSON reloaded");
-  //           }
-  //         }, sheets.rowCount);
-  //       }
-  //     });
-  //   }, 10000);
-  // }
+  MongoClient.connect(url, function(err, db) {
+    if (err) throw err;
+    db.createCollection('menus', function(err, res) {
+      if (err) throw err;
+      db.createCollection('rating', function(err, res){
+        if (err) throw err;
+
+        var menus = db.collection('menus');
+        var rating = db.collection('rating');
+
+        rating.createIndex( { "name": 1 }, { unique: true }, function(err, res){
+
+          sheets.importData = function(file){
+            var content = file.buffer.toString();
+            var newData = content.split(/(?:\r\n|\r|\n)/g).map( (element) => element.split('\t') ) ;
+            nawData.slice(1).forEach((element) => {
+              sheets.addData(element);
+            });
+          }
+
+          sheets.importOld = function(file){
+            var content = JSON.parse(file.buffer.toString());
+            content.slice(1).forEach((element) => {
+              sheets.addData(element);
+            });
+          }
+
+          sheets.addData = function(element){
+            menus.findOne({ value : element }, (err, result) => {
+              if (err) throw err;
+              if(!result){
+                var temp = element[1].split('-');
+                var itemDate = Date.UTC(parseInt(temp[0]),parseInt(temp[1])-1,parseInt(temp[2]));
+                menus.insertOne({
+                  date: itemDate,
+                  value: element,
+                });
+                tryAddMenu(element[8]);
+              }
+            });
+          }
+
+          function tryAddMenu(keyname){
+            rating.insertOne({
+              name: keyname,
+              rateCount: [0,0,0,0,0]
+            }, function(err, res) {
+
+            });
+          }
+
+          sheets.exportData = function(callback){
+            menus.find({}).toArray( (err, result) => {
+              if (err) throw err;
+              callback(result);
+            });
+          }
+
+          sheets.filterData = function(callback){
+            var current = new Date();
+            var msstart = Date.UTC(current.getFullYear(), current.getMonth(), current.getDate())-86400000;
+
+            return menus.find({ date: { $gte: msstart, $lt : msstart+1000*60*60*24*7 } }).toArray( (err, result) => {
+              if (err) throw err;
+              callback(result);
+            });
+          }
+
+          sheets.getRating = function(key, callback){
+            return rating.find({ name: key }).toArray( (err, result) => {
+              if (err) throw err;
+              callback(result);
+            });
+          }
+
+          sheets.addRating = function(key, value){
+            sheets.getRating(key, (result) => {
+              result[0].rateCount[value]++;
+              rating.update({ name: key }, result[0]);
+            });
+          }
+        });
+      });
+    });
+  });
 }

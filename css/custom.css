@@ -18,8 +18,26 @@ body {
   list-style: none;
 }
 
+.btn-blue{
+  background-color: #62A8E5;
+  padding: 1rem;
+  color: black;
+  font-size: 1.3rem;
+}
+
 nav{
   background-color: #62A8E5;
+}
+
+#welcome{
+  color: #fff;
+  font-weight: 300;
+  text-shadow:
+  /* Text Outline */
+  -1.5px -1.5px 0 #000,
+  1.5px -1.5px 0 #000,
+  -1.5px 1.5px 0 #000,
+  1.5px 1.5px 0 #000;
 }
 
 .below-nav {
@@ -57,14 +75,15 @@ ul{
 
 #index-header{
   width: 100%;
-  background-image: url('../images/DHFallPic.jpg');
+  height: 750px;
+  background-image: url('../images/DHFallPic.jpg'); /* It might be worth getting the original image so the quality is higher (https://www.flickr.com/photos/nmhphotos/37815568041/in/album-72157687562625500/) */
   background-attachment: fixed;
   padding : 16rem 0 8rem 0;
 }
 
 #menulist-header{
   width: 100%;
-  background-image: url('../images/salad.jpg');
+  background-image: url('../images/salad.png');
 
   background-attachment: fixed;
   padding : 4rem 0 2rem 0;
